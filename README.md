@@ -1,6 +1,6 @@
 # Google Ads Management Tool
 
-A Google Apps Script project that helps storage facility managers and specialists create, manage, and track advertising budgets and promotional text for Google Ads campaigns.
+A Google Apps Script project that helps storage facility managers create, manage, and track advertising budgets and promotional text for Google Ads campaigns.
 
 ## Features
 
@@ -23,6 +23,15 @@ Create promotional text for Google Ads with a user-friendly interface:
 - Audit trail for budget changes
 - Intelligent budget determination with LASTMONTHBUDGET function
 
+### AdPulse Budget Verification
+- Automatically verifies that budget amounts match the corresponding amounts in AdPulse
+- Highlights matches, mismatches, and missing items with color-coding
+- Provides clear status indicators in the AdPulse Match column
+- Shows the exact budget value from AdPulse when there's a mismatch
+- Easy setup - just paste data from AdPulse into the AdPulse sheet
+- Case-insensitive matching for campaign names
+- Detailed verification summary with counts of matches, mismatches, and not found items
+
 ## File Structure
 
 - **adCustomizer.gs** - Backend logic for the promotion editor dialog
@@ -31,6 +40,7 @@ Create promotional text for Google Ads with a user-friendly interface:
 - **AdPulseCheck.gs** - Monitors changes to approved budgets
 - **processSheets.gs** - Core engine for timestamp functionality
 - **sheetHelpers.gs** - Utility functions including LASTMONTHBUDGET
+- **adPulseBudgetVerification.gs** - Handles verification between spreadsheet budgets and AdPulse data
 
 ## Setup Instructions
 
@@ -63,7 +73,21 @@ Timestamps are added automatically when:
 3. "Pre-Approved Client Budgets" is edited → Updates "Pre-approval Timestamp"
 4. "Budget Total" is edited → Updates "Budget Total Timestamp"
 
+### AdPulse Budget Verification
+1. Go to the "AdPulse" sheet (it will be created automatically if it doesn't exist)
+2. Paste data from AdPulse including the "Budget Name" and "Budget Target" columns
+3. The verification will run automatically
+4. Review the results in column W "AdPulse Match" of your budget sheets
+   - "✓ Match" - Budget values match
+   - "❌ Mismatch: $xxx" - Values don't match, shows the AdPulse value
+   - "⚠️ Not Found" - Campaign not found in AdPulse data
+
 ## Notes
-- This script only works on sheets that end with "24 Budgets" or "25 Budgets"
+- This script only works on sheets that end with "25 Budgets" or "26 Budgets"
 - Maximum promotion length is 30 characters (including the * symbol)
 - When combining promotions (Move-In + discount), the text automatically shortens to "Move-In+" to save characters
+- For AdPulse verification, make sure your pasted data includes column headers "Budget Name" and "Budget Target"
+
+## Customization Guide
+
+For non-technical team members who need to customize this tool, please refer to the "Guide to Modifying Google Ads Management Tool Using AI" document. This guide provides step-by-step instructions for using AI tools like Claude, ChatGPT, or Google Gemini to make common modifications.
