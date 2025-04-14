@@ -10,8 +10,9 @@
 // - The script runs automatically when the AdPulse sheet is updated
 // - Mismatches will be highlighted in your budget sheets
 
-// Create the AdPulse sheet if it doesn't exist when the spreadsheet is opened
-function onOpen() {
+// MODIFIED: Renamed from onOpen to initializeAdPulseSheet to avoid conflicts
+// This function will be called from the main onOpen function
+function initializeAdPulseSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss.getSheetByName('AdPulse')) {
     createAdPulseSheet();
@@ -41,9 +42,10 @@ function createAdPulseSheet() {
 }
 
 /**
- * Trigger function that runs when a spreadsheet is edited
+ * MODIFIED: Renamed from onEdit to handleAdPulseEdit to avoid conflicts
+ * This function will be called from the main onEdit function
  */
-function onEdit(e) {
+function handleAdPulseEdit(e) {
   // Verify we have a valid edit event
   if (!e || !e.range) return;
   
@@ -324,26 +326,6 @@ function verifyBudgetSheet(budgetSheet, adPulseData) {
   applyConditionalFormatting(budgetSheet, statusColIndex + 1);
   
   return { matchCount, mismatchCount, notFoundCount };
-}
-
-/**
- * Helper function to clean and normalize budget values
- * @param {any} value - The budget value to clean
- * @return {number} The cleaned numeric value
- */
-function cleanBudgetValue(value) {
-  if (typeof value === 'number') {
-    return value;
-  }
-  
-  if (!value) return NaN;
-  
-  // Convert to string, remove currency symbols and commas, then parse to number
-  let cleanedValue = value.toString()
-    .replace(/[$,]/g, '') // Remove $ and commas
-    .trim();
-  
-  return parseFloat(cleanedValue);
 }
 
 /**
