@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      /* Custom dropdown styles */
+      .custom-dropdown {
+        position: relative;
+        width: 100%;
+      }
+      
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        width: 100%;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        z-index: 10;
+        margin-top: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      
+      .dropdown-item {
+        padding: 10px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f3f4;
+      }
+      
+      .dropdown-item:hover {
+        background-color: #f8f9fa;
+      }
+      
+      .dropdown-item:last-child {
+        border-bottom: none;
+      }
+
+      /* Original styles */
+      body {
+        padding: 20px;
+        font-family: 'Google Sans', Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #202124;
+      }
+
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      .search-container {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 8px;
+      }
+
+      .form-control {
+        flex-grow: 1;
+        padding: 12px;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        box-sizing: border-box;
+        width: 100%;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+
+      .refresh-button {
+        padding: 12px;
+        background: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.2s ease;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .refresh-button:hover {
+        background: #1557b0;
+      }
+
+      .promo-options {
+        display: none;
+        margin-top: 25px;
+        background: #f8f9fa;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+      }
+
+      .custom-options {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .button-container {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .save-button {
+        background: #34A853;
+        color: white;
+        padding: 14px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        flex: 1;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+      }
+
+      .save-button:hover {
+        background: #2E8B47;
+      }
+      
+      .save-button:disabled {
+        background: #a0d9b4;
+        cursor: not-allowed;
+      }
+
+      .close-button {
+        background: #dadce0;
+        color: #202124;
+        padding: 14px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+      }
+
+      .close-button:hover {
+        background: #c0c3c7;
+      }
+
+      input:focus, select:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+      }
+
+      label {
+        display: block;
+        font-weight: 500;
+        color: #202124;
+        font-size: 14px;
+      }
+
+      label + input, label + select {
+        margin-top: 8px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      select.form-control {
+        height: 42px;
+        background-color: white;
+        cursor: pointer;
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: 28px;
+        color: #202124;
+        font-size: 24px;
+        font-weight: 500;
+      }
+
+      .radio-group {
+        margin: 12px 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .radio-group input[type="radio"] {
+        margin-right: 8px;
+        margin-top: 0;
+      }
+
+      .radio-group label {
+        font-weight: normal;
+        display: inline;
+        margin-left: 4px;
+        cursor: pointer;
+      }
+
+      .option-section {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .char-count {
+        font-size: 12px;
+        color: #5f6368;
+        text-align: right;
+        margin-top: 4px;
+      }
+
+      .char-count.warning {
+        color: #ea4335;
+      }
+
+      .preview-box {
+        padding: 12px;
+        background: #f8f9fa;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        margin-top: 8px;
+        font-family: monospace;
+      }
+      
+      #statusMessage {
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 16px;
+        margin-bottom: 16px;
+        display: none;
+      }
+      
+      .success-message {
+        background-color: #e6f4ea;
+        color: #34A853;
+        border: 1px solid #cbf0d9;
+      }
+      
+      .error-message {
+        background-color: #fce8e6;
+        color: #ea4335;
+        border: 1px solid #fad2cf;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Ad Customizer</h2>
+      
+      <div class="form-group">
+        <label for="facilitySearch">Search/Select Facility:</label>
+        <div class="search-container">
+          <div class="custom-dropdown">
+            <input type="text" 
+                   id="facilitySearch" 
+                   class="form-control"
+                   autocomplete="off"
+                   placeholder="Start typing to search..."
+                   onfocus="showDropdown()" 
+                   oninput="filterFacilities()">
+            <div id="dropdownList" class="dropdown-content">
+              <!-- Facility options will be populated here by JavaScript -->
+            </div>
+          </div>
+          <button onclick="refreshFacilities()" 
+                  class="refresh-button" 
+                  title="Refresh facility list"
+                  type="button">
+            ↻
+          </button>
+        </div>
+      </div>
+
+      <div id="promoOptions" class="promo-options">
+        <!-- Move-In Special Section -->
+        <div id="moveInSpecialSection">
+          <div class="form-group">
+            <label>Include Move-In Special?</label>
+            <div class="radio-group">
+              <input type="radio" id="moveInSpecialYes" name="moveInSpecial" value="yes" onchange="toggleMoveInAmount()">
+              <label for="moveInSpecialYes">Yes</label>
+            </div>
+            <div class="radio-group">
+              <input type="radio" id="moveInSpecialNo" name="moveInSpecial" value="no" checked onchange="toggleMoveInAmount()">
+              <label for="moveInSpecialNo">No</label>
+            </div>
+          </div>
+          
+          <div id="moveInAmountDiv" class="form-group hidden">
+            <label for="moveInAmount">Move-In Amount ($):</label>
+            <input type="number" 
+                  id="moveInAmount" 
+                  class="form-control" 
+                  min="1" 
+                  max="100" 
+                  onchange="updateCharCount()" 
+                  oninput="this.value = Math.min(Math.max(this.value, 1), 100)" 
+                  value="20">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="promoCategory">Promotion Type:</label>
+          <select id="promoCategory" class="form-control" onchange="handlePromoCategoryChange()">
+            <option value="">None</option>
+            <option value="standard">Pre-defined Promotions</option>
+            <option value="custom">Custom Discount Builder</option>
+          </select>
+        </div>
+
+        <!-- Standard Promos -->
+        <div id="standardOptions" class="form-group hidden">
+          <label for="standardPromo">Select Standard Promotion:</label>
+          <select id="standardPromo" class="form-control" onchange="updateCharCount()">
+            <option value="first_month_dollar">$1 First Month's Rent</option>
+            <option value="move_in">Move-In Specials</option>
+            <option value="online_rates">See Our Online Rates Today</option>
+            <option value="online_specials">View Online Specials</option>
+            <option value="web_exclusive">Web-Exclusive Discounts</option>
+            <option value="first_month_free">First Month Free</option>
+            <option value="military">Military Special</option>
+            <option value="first_responder">First Responder Discounts</option>
+          </select>
+        </div>
+
+        <!-- Custom Promos -->
+        <div id="customOptions" class="custom-options hidden">
+          <div class="form-group">
+            <label>Discount Type:</label>
+            <div class="radio-group">
+              <input type="radio" id="dollarDiscount" name="discountType" value="dollar" onchange="handleDiscountTypeChange()">
+              <label for="dollarDiscount">Dollar Amount</label>
+            </div>
+            <div class="radio-group">
+              <input type="radio" id="percentageDiscount" name="discountType" value="percentage" onchange="handleDiscountTypeChange()">
+              <label for="percentageDiscount">Percentage</label>
+            </div>
+          </div>
+
+          <div id="dollarAmount" class="form-group hidden">
+            <label for="amount">Discount Amount ($):</label>
+            <input type="number" 
+                   id="amount" 
+                   class="form-control" 
+                   min="1" 
+                   max="100" 
+                   onchange="updateCharCount()"
+                   oninput="this.value = Math.min(Math.max(this.value, 1), 100)">
+          </div>
+
+          <div id="percentageAmount" class="form-group hidden">
+            <label for="percentage">Discount Percentage (%):</label>
+            <input type="number" 
+                   id="percentage" 
+                   class="form-control" 
+                   min="1" 
+                   max="100" 
+                   onchange="updateCharCount()"
+                   oninput="this.value = Math.min(Math.max(this.value, 1), 100)">
+          </div>
+
+          <div id="timePeriod" class="form-group">
+            <label for="months">Time Period:</label>
+            <select id="months" class="form-control" onchange="updateCharCount()">
+              <option value="1">1 Month</option>
+              <option value="2">2 Months</option>
+              <option value="3">3 Months</option>
+              <option value="4">4 Months</option>
+              <option value="5">5 Months</option>
+              <option value="6">6 Months</option>
+              <option value="lifetime">Lifetime of Rental</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Lock Promotion -->
+        <div class="option-section">
+          <div class="form-group">
+            <label>Include Free Lock Promotion?</label>
+            <div class="radio-group">
+              <input type="radio" id="lockYes" name="lockPromo" value="yes" onchange="updateCharCount()">
+              <label for="lockYes">Yes</label>
+            </div>
+            <div class="radio-group">
+              <input type="radio" id="lockNo" name="lockPromo" value="no" checked onchange="updateCharCount()">
+              <label for="lockNo">No</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview and Character Count -->
+        <div id="promoPreview" class="form-group hidden">
+          <label>Preview:</label>
+          <div id="previewText" class="preview-box"></div>
+          <div id="charCount" class="char-count">0/30 characters</div>
+        </div>
+        
+        <!-- Status message container -->
+        <div id="statusMessage"></div>
+        
+        <div class="button-container">
+          <button onclick="savePromo()" id="saveButton" class="save-button" type="button">Save Promotion</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let processingPromo = false;
+      let allFacilities = [];
+      
+      // Initialize the dropdown when the page loads
+      window.onload = function() {
+        // Get all facilities from server and store them
+        google.script.run
+          .withSuccessHandler(function(facilities) {
+            allFacilities = facilities;
+            populateDropdown(facilities);
+          })
+          .withFailureHandler(function(error) {
+            console.error("Error loading facilities:", error);
+            showStatusMessage("Failed to load facilities. Please try again.", false);
+          })
+          .getFacilities();
+          
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!event.target.closest('.custom-dropdown')) {
+            document.getElementById('dropdownList').style.display = 'none';
+          }
+        });
+      };
+      
+      function populateDropdown(facilities) {
+        const dropdownList = document.getElementById('dropdownList');
+        dropdownList.innerHTML = '';
+        
+        if (facilities.length === 0) {
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          item.textContent = 'No facilities found';
+          dropdownList.appendChild(item);
+          return;
+        }
+        
+        facilities.forEach(facility => {
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          item.textContent = facility;
+          item.onclick = function() {
+            document.getElementById('facilitySearch').value = facility;
+            dropdownList.style.display = 'none';
+            document.getElementById('promoOptions').style.display = 'block';
+          };
+          dropdownList.appendChild(item);
+        });
+      }
+      
+      function showDropdown() {
+        document.getElementById('dropdownList').style.display = 'block';
+      }
+      
+      function filterFacilities() {
+        const input = document.getElementById('facilitySearch');
+        const filter = input.value.toLowerCase();
+        
+        let filteredFacilities;
+        if (filter.length === 0) {
+          // Show all facilities if the input is empty
+          filteredFacilities = allFacilities;
+        } else {
+          // Filter facilities based on input
+          filteredFacilities = allFacilities.filter(facility => 
+            facility.toLowerCase().includes(filter)
+          );
+        }
+        
+        populateDropdown(filteredFacilities);
+        document.getElementById('dropdownList').style.display = 'block';
+        
+        // Show promo options if a facility is fully selected
+        if (allFacilities.includes(input.value)) {
+          document.getElementById('promoOptions').style.display = 'block';
+        }
+      }
+      
+      function refreshFacilities() {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            allFacilities = result;
+            populateDropdown(result);
+            showStatusMessage('Facility list refreshed!', true);
+          })
+          .withFailureHandler(function(error) {
+            showStatusMessage('Failed to load facilities: ' + error, false);
+          })
+          .refreshFacilitiesList();
+      }
+      
+      function toggleMoveInAmount() {
+        const moveInSpecialEnabled = document.getElementById('moveInSpecialYes').checked;
+        document.getElementById('moveInAmountDiv').classList.toggle('hidden', !moveInSpecialEnabled);
+        updateCharCount();
+      }
+
+      function handlePromoCategoryChange() {
+        const category = document.getElementById('promoCategory').value;
+        const standardOptions = document.getElementById('standardOptions');
+        const customOptions = document.getElementById('customOptions');
+
+        standardOptions.classList.add('hidden');
+        customOptions.classList.add('hidden');
+
+        if (category === 'standard') {
+          standardOptions.classList.remove('hidden');
+        } else if (category === 'custom') {
+          customOptions.classList.remove('hidden');
+        }
+        updateCharCount();
+      }
+
+      function handleDiscountTypeChange() {
+        const dollarChecked = document.getElementById('dollarDiscount').checked;
+        const percentageChecked = document.getElementById('percentageDiscount').checked;
+        const dollarAmount = document.getElementById('dollarAmount');
+        const percentageAmount = document.getElementById('percentageAmount');
+
+        dollarAmount.classList.add('hidden');
+        percentageAmount.classList.add('hidden');
+
+        if (dollarChecked) {
+          dollarAmount.classList.remove('hidden');
+        } else if (percentageChecked) {
+          percentageAmount.classList.remove('hidden');
+        }
+        updateCharCount();
+      }
+
+      function updateCharCount() {
+        const promoText = generatePreviewText();
+        const charCount = document.getElementById('charCount');
+        const previewText = document.getElementById('previewText');
+        const promoPreview = document.getElementById('promoPreview');
+        
+        if (promoText) {
+          const finalText = promoText + '*';
+          const count = finalText.length;
+          promoPreview.classList.remove('hidden');
+          previewText.textContent = finalText;
+          charCount.textContent = `${count}/30 characters`;
+          
+          if (count > 30) {
+            charCount.classList.add('warning');
+          } else {
+            charCount.classList.remove('warning');
+          }
+        } else {
+          promoPreview.classList.add('hidden');
+        }
+      }
+
+      function generatePreviewText() {
+        // Get Move-In Special if enabled
+        let moveInText = '';
+        const moveInSpecialEnabled = document.getElementById('moveInSpecialYes').checked;
+        if (moveInSpecialEnabled) {
+          const moveInAmount = document.getElementById('moveInAmount').value;
+          if (moveInAmount) {
+            moveInText = `$${moveInAmount} Move-In Special`;
+          }
+        }
+        
+        // Get promotion text based on category
+        let promoText = '';
+        const promoCategory = document.getElementById('promoCategory').value;
+        
+        if (promoCategory === 'standard') {
+          const standardPromo = document.getElementById('standardPromo').value;
+          switch(standardPromo) {
+            case 'first_month_dollar':
+              promoText = '$1 First Month\'s Rent';
+              break;
+            case 'move_in':
+              promoText = 'Move-In Specials';
+              break;
+            case 'online_rates':
+              promoText = 'See Our Online Rates Today';
+              break;
+            case 'online_specials':
+              promoText = 'View Online Specials';
+              break;
+            case 'web_exclusive':
+              promoText = 'Web-Exclusive Discounts';
+              break;
+            case 'first_month_free':
+              promoText = 'First Month Free';
+              break;
+            case 'military':
+              promoText = 'Military Special';
+              break;
+            case 'first_responder':
+              promoText = 'First Responder Discounts';
+              break;
+          }
+        } else if (promoCategory === 'custom') {
+          const discountType = document.querySelector('input[name="discountType"]:checked')?.value;
+          const months = document.getElementById('months').value;
+          
+          if (discountType && months) {
+            if (discountType === 'dollar') {
+              const amount = document.getElementById('amount').value;
+              if (amount) {
+                if (months === 'lifetime') {
+                  promoText = `$${amount} Off Lifetime Of Rental`;
+                } else {
+                  promoText = `$${amount} Off ${months} Month${months > 1 ? 's' : ''}`;
+                }
+              }
+            } else if (discountType === 'percentage') {
+              const percentage = document.getElementById('percentage').value;
+              if (percentage) {
+                if (months === 'lifetime') {
+                  promoText = `${percentage}% Off Lifetime Of Rental`;
+                } else {
+                  promoText = `${percentage}% Off ${months} Month${months > 1 ? 's' : ''}`;
+                }
+              }
+            }
+          }
+        }
+        
+        // Combine texts - only add "+" if both exist
+        let finalText = '';
+        if (moveInText && promoText) {
+          // Use shortened version when combined with another promotion, but keep dollar sign
+          const moveInAmount = document.getElementById('moveInAmount').value;
+          finalText = `$${moveInAmount} Move-In+${promoText}`;
+        } else if (moveInText) {
+          finalText = moveInText; // Use full "$XX Move-In Special" when standalone
+        } else {
+          finalText = promoText;
+        }
+        
+        // Add lock promotion if selected
+        const includeLock = document.getElementById('lockYes').checked;
+        if (includeLock && finalText) {
+          finalText += ' +Free Lock';
+        }
+        
+        return finalText;
+      }
+      
+      function showStatusMessage(message, isSuccess) {
+        const statusElement = document.getElementById('statusMessage');
+        statusElement.textContent = message;
+        statusElement.style.display = 'block';
+        
+        if (isSuccess) {
+          statusElement.className = 'success-message';
+        } else {
+          statusElement.className = 'error-message';
+        }
+      }
+
+      function savePromo() {
+        // Prevent double-submissions
+        if (processingPromo) return;
+        processingPromo = true;
+    
+        // Disable save button while processing
+        const saveButton = document.getElementById('saveButton');
+        saveButton.disabled = true;
+    
+        // Get form values
+        const facility = document.getElementById('facilitySearch').value;
+        const promoCategory = document.getElementById('promoCategory').value;
+        const standardPromo = document.getElementById('standardPromo').value;
+        const includeLock = document.getElementById('lockYes').checked;
+        const includeMoveInSpecial = document.getElementById('moveInSpecialYes').checked;
+        const moveInAmount = document.getElementById('moveInAmount').value;
+    
+        // Basic validation
+        if (!facility) {
+          showStatusMessage('Please select a facility', false);
+          saveButton.disabled = false;
+          processingPromo = false;
+          return;
+        }
+          
+        // Create data object
+        const promoData = {
+          facility: facility,
+          includeLock: includeLock,
+          includeMoveInSpecial: includeMoveInSpecial,
+          moveInAmount: moveInAmount
+        };
+        
+        // Only add promotion type if one is selected
+        if (promoCategory) {
+          promoData.type = promoCategory;
+          
+          if (promoCategory === 'standard') {
+            if (!standardPromo) {
+              showStatusMessage('Please select a standard promotion', false);
+              saveButton.disabled = false;
+              processingPromo = false;
+              return;
+            }
+            promoData.standardPromo = standardPromo;
+          } else {
+            // Handle custom promo
+            const dollarChecked = document.getElementById('dollarDiscount').checked;
+            const percentageChecked = document.getElementById('percentageDiscount').checked;
+            
+            if (!dollarChecked && !percentageChecked) {
+              showStatusMessage('Please select a discount type (Dollar or Percentage)', false);
+              saveButton.disabled = false;
+              processingPromo = false;
+              return;
+            }
+            
+            promoData.discountType = dollarChecked ? 'dollar' : 'percentage';
+            promoData.months = document.getElementById('months').value;
+            
+            if (dollarChecked) {
+              const amount = Number(document.getElementById('amount').value);
+              if (!amount || isNaN(amount) || amount <= 0 || amount > 100) {
+                showStatusMessage('Please enter a valid dollar amount (1-100)', false);
+                saveButton.disabled = false;
+                processingPromo = false;
+                return;
+              }
+              promoData.amount = amount;
+            } else {
+              const percentage = Number(document.getElementById('percentage').value);
+              if (!percentage || isNaN(percentage) || percentage <= 0 || percentage > 100) {
+                showStatusMessage('Please enter a valid percentage (1-100)', false);
+                saveButton.disabled = false;
+                processingPromo = false;
+                return;
+              }
+              promoData.percentage = percentage;
+            }
+          }
+        }
+        
+        // Check character limit
+        const promoText = generatePreviewText();
+        if ((promoText + '*').length > 30) {
+          showStatusMessage('Final promotion text (including *) must be 30 characters or less', false);
+          saveButton.disabled = false;
+          processingPromo = false;
+          return;
+        }
+        
+        // Show saving status
+        showStatusMessage('Saving promotion...', false);
+        
+        // Store facility name for success message
+        const facilityName = facility;
+        
+        // Clear ONLY the facility selection - don't hide the form
+        document.getElementById('facilitySearch').value = '';
+        
+        // Send to server but don't close dialog
+        google.script.run
+          .withSuccessHandler(function() {
+            // Show success message
+            showStatusMessage(`Promotion for "${facilityName}" saved successfully!`, true);
+            
+            // Re-enable button
+            saveButton.disabled = false;
+            processingPromo = false;
+          })
+          .withFailureHandler(function(error) {
+            // Show error message
+            showStatusMessage('Error saving promotion: ' + error, false);
+            
+            // Re-enable button
+            saveButton.disabled = false;
+            processingPromo = false;
+          })
+          .savePromoToSheet(promoData);
+      }
+    </script>
+  </body>
+</html>
